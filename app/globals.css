@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f4f7fb;
+  --foreground: #1a2332;
+  --card: #ffffff;
+  --card-border: #dce3ed;
+  --muted: #5c6b7f;
+  --navy: #12498a;
+  --navy-light: #1a5ba8;
+  --teal: #00d4a6;
+  --teal-dark: #00b892;
+}
+
+.dark {
+  --background: #0b1118;
+  --foreground: #eef2f7;
+  --card: #121a24;
+  --card-border: #243044;
+  --muted: #8b9bb0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-teal: var(--teal);
+  --color-teal-dark: var(--teal-dark);
+  --font-sans: var(--font-lato);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-lato), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in-95 {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+[data-state="open"].animate-in {
+  animation: fade-in 200ms ease-out;
+}
+
+[data-state="open"].zoom-in-95 {
+  animation: zoom-in-95 200ms ease-out;
+}
