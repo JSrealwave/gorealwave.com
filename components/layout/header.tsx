@@ -21,18 +21,18 @@ export function Header() {
         <div className="flex items-center gap-8">
           <Link href="/" className="group flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-navy">
-              <span className="text-xs font-bold tracking-tight text-white">e+</span>
+              <span className="text-[10px] font-bold tracking-tight text-white">RW</span>
             </div>
             <div className="hidden sm:block">
               <p className="text-sm leading-tight">
-                <span className="font-bold text-navy dark:text-teal">ePlus</span>
+                <span className="font-bold text-navy dark:text-teal">Realwave</span>
                 <span className="font-normal text-foreground/80 dark:text-slate-300">
                   {" "}
-                  Realwave Enablement
+                  Enablement
                 </span>
               </p>
               <p className="text-[11px] text-muted">
-                Internal Tool – Authorized ePlus Sellers Only
+                Internal Tool – Authorized Sellers Only
               </p>
             </div>
           </Link>
@@ -67,7 +67,7 @@ export function Header() {
           <div className="hidden items-center gap-2 rounded-md border border-card-border bg-background px-3 py-1.5 sm:flex">
             <UserCircle2 className="h-4 w-4 text-muted" />
             <span className="text-xs font-medium text-foreground/80">
-              ePlus Seller
+              Seller
             </span>
           </div>
         </div>
