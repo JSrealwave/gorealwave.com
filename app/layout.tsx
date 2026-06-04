@@ -1,51 +1,56 @@
+
 import type { Metadata } from "next";
-import { Lato } from "next/font/google";
-import { Header } from "@/components/layout/header";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ClerkProvider, Show, UserButton } from "@clerk/nextjs";
 import "./globals.css";
 
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-lato",
-});
-
 export const metadata: Metadata = {
-  title: {
-    default: "ePlus Realwave Enablement | Seller Portal",
-    template: "%s | ePlus Realwave Enablement",
-  },
-  description:
-    "Internal sales enablement portal for ePlus Realwave sellers — one-pagers, guides, TCO tools, and weekly briefs.",
-  robots: {
-    index: false,
-    follow: false,
-  },
+  title: "Realwave Enablement Hub",
+  description: "Internal tools and assets for ePlus sellers",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${lato.variable} h-full`}>
-      <body className="min-h-full flex flex-col antialiased bg-background text-foreground transition-colors duration-200">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-card-border bg-card py-5">
-            <div className="mx-auto max-w-7xl space-y-1 px-4 text-center sm:px-6 lg:px-8">
-              <p className="text-xs text-muted">
-                © {new Date().getFullYear()} ePlus Realwave Enablement · Internal Use Only
-              </p>
-              <p className="text-[11px] text-muted/70">
-                Where Technology Means More<sup className="text-[9px]">®</sup>
-              </p>
-            </div>
-          </footer>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className="bg-slate-950 text-white">
+          {/* Header only shows when user is signed in */}
+          <Show when="signed-in">
+            <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-[backdrop-filter]:bg-slate-950/80">
+              <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+                {/* Left side - Branding */}
+                <div className="flex items-center gap-x-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#12498a]">
+                    <span className="font-bold text-2xl tracking-tighter text-white">e+</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold tracking-tight text-lg">Realwave</div>
+                    <div className="text-[10px] text-slate-500 -mt-1">Enablement Hub</div>
+                  </div>
+                </div>
+
+                {/* Right side - User Menu */}
+                <div className="flex items-center gap-x-4">
+                  <UserButton 
+                    appearance={{
+                      elements: {
+                        avatarBox: "h-9 w-9 rounded-full ring-1 ring-slate-700 hover:ring-slate-600 transition",
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </header>
+          </Show>
+
+          <main className="min-h-[calc(100vh-65px)]">
+            {children}
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
