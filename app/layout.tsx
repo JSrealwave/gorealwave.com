@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { ClerkProvider, Show, UserButton } from "@clerk/nextjs";
 import "./globals.css";
@@ -14,14 +13,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="bg-slate-950 text-white">
-          {/* Header only shows when user is signed in */}
+    <html lang="en">
+      <body className="bg-slate-950 text-white">
+        <ClerkProvider
+          signInUrl="/login"
+          signUpUrl="/login"
+          afterSignOutUrl="/login"
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
+          signInForceRedirectUrl="/"
+          appearance={{
+            layout: {
+              unsafe_disableDevelopmentModeWarnings: true,
+            },
+          }}
+        >
           <Show when="signed-in">
             <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-[backdrop-filter]:bg-slate-950/80">
               <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-                {/* Left side - Branding */}
+                {/* Left: Branding */}
                 <div className="flex items-center gap-x-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#12498a]">
                     <span className="font-bold text-2xl tracking-tighter text-white">e+</span>
@@ -32,7 +42,7 @@ export default function RootLayout({
                   </div>
                 </div>
 
-                {/* Right side - User Menu */}
+                {/* Right: User Menu */}
                 <div className="flex items-center gap-x-4">
                   <UserButton 
                     appearance={{
@@ -49,8 +59,8 @@ export default function RootLayout({
           <main className="min-h-[calc(100vh-65px)]">
             {children}
           </main>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

@@ -70,3 +70,22 @@ body {
 [data-state="open"].zoom-in-95 {
   animation: zoom-in-95 200ms ease-out;
 }
+
+/* Aggressive Clerk Development Mode hiding */
+[class*="development-mode"],
+[class*="cl-development"],
+.cl-development-mode-badge,
+.cl-internal-1d4v0v9,
+[data-clerk-element*="development"],
+.clerkjs-dev-badge,
+#clerk-dev-badge,
+.cl-badge-development,
+[class*="clerk"] [class*="dev-mode"],
+[class*="clerk"] [class*="orange"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

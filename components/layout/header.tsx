@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserCircle2 } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/", label: "Dashboard" },
   { href: "/library", label: "Content Library" },
   { href: "/weekly-brief", label: "Weekly Brief" },
+  { href: "/sled", label: "SLED" },
 ];
 
 export function Header() {
@@ -28,7 +29,7 @@ export function Header() {
                 <span className="font-bold text-navy dark:text-teal">Realwave</span>
                 <span className="font-normal text-foreground/80 dark:text-slate-300">
                   {" "}
-                  Enablement
+                  Enablement Hub
                 </span>
               </p>
               <p className="text-[11px] text-muted">
@@ -64,12 +65,13 @@ export function Header() {
 
         <div className="flex items-center gap-2.5">
           <ThemeToggle />
-          <div className="hidden items-center gap-2 rounded-md border border-card-border bg-background px-3 py-1.5 sm:flex">
-            <UserCircle2 className="h-4 w-4 text-muted" />
-            <span className="text-xs font-medium text-foreground/80">
-              Seller
-            </span>
-          </div>
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "h-7 w-7",
+              },
+            }}
+          />
         </div>
       </div>
 

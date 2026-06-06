@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { auth } from "@clerk/nextjs/server";
 import { LibraryClient } from "./library-client";
 
 export const metadata: Metadata = {
   title: "Content Library",
 };
 
-export default function LibraryPage() {
+export default async function LibraryPage() {
+  await auth(); // ensure protected (redundant with middleware but uses the helper)
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 border-b border-card-border pb-6">

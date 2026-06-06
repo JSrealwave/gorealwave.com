@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Sparkles, TrendingUp } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
 import {
   contentItems,
   getHighlightItem,
@@ -8,7 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  // Use Clerk auth() helper (middleware ensures this page is only reached when authenticated)
+  const { userId } = await auth();
+
   const highlight = getHighlightItem();
   const otherItems = contentItems.filter((item) => item.id !== highlight.id);
 

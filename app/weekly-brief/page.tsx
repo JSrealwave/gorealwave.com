@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { auth } from "@clerk/nextjs/server";
 import { WeeklyBriefSection } from "@/components/weekly-brief/weekly-brief-section";
 
 export const metadata: Metadata = {
   title: "Weekly Brief",
 };
 
-export default function WeeklyBriefPage() {
+export default async function WeeklyBriefPage() {
+  await auth(); // ensure protected (redundant with middleware but uses the helper)
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 border-b border-card-border pb-6">

@@ -1,30 +1,45 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const authCookie = request.cookies.get('auth')?.value;
-  const isLoginPage = request.nextUrl.pathname === '/login';
+const isPublicRoute = createRouteMatcher([
+  '/login(.*)',
+]);
 
-  // If user is authenticated and trying to access login page, redirect to home
-  if (authCookie && isLoginPage) {
-    return NextResponse.redirect(new URL('/', request.url));
+export default clerkMiddleware(
+  async (auth, req) => {
+    const { userId, redirectToSignIn } = await auth();
+
+    // If the user is already signed in and hits /login (or any subpath like /login/verify),
+    // send them to the app home. This must be explicit because we marked /login public.
+    if (userId && req.nextUrl.pathname.startsWith('/login')) {
+      const home = new URL('/', req.url);
+      return NextResponse.redirect(home);
+    }
+
+    if (!isPublicRoute(req)) {
+      // Unauthenticated user on a protected route → redirect to our local /login.
+      // The signInUrl passed in the options below makes redirectToSignIn() target /login
+      // (instead of the default hosted Clerk sign-in on accounts.dev).
+      if (!userId) {
+        return redirectToSignIn({ returnBackUrl: req.url });
+      }
+    }
+  },
+  {
+    // This option is essential for path-based / custom sign-in pages.
+    // It configures both the middleware redirect target and makes the value
+    // available to server-side helpers like auth() / redirectToSignIn().
+    signInUrl: '/login',
   }
-
-  // If user is NOT authenticated and not on login page, redirect to login
-  if (!authCookie && !isLoginPage) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  return NextResponse.next();
-}
+);
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - api routes that should stay public (we'll handle /api/login separately)
-     * - static files
-     */
-    '/((?!api/login|_next/static|_next/image|favicon.ico).*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+    // Always run for Clerk's internal frontend API / handshake routes
+    '/__clerk/(.*)',
   ],
 };
