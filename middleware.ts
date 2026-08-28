@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   '/login(.*)',
+  '/public(.*)',
+  '/datasheets(.*)',
+  // PDF route enforces per-slug auth inside the handler (public slugs vs signed-in).
+  '/api/pdf(.*)',
 ]);
 
 export default clerkMiddleware(
@@ -36,7 +40,7 @@ export default clerkMiddleware(
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|pdf|mp4)).*)',
     // Always run for API routes
     '/(api|trpc)(.*)',
     // Always run for Clerk's internal frontend API / handshake routes

@@ -1,42 +1,37 @@
 import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
+import { PageContainer } from "@/components/layout/page-container";
+import { PageHeader } from "@/components/layout/page-header";
 
 export const metadata: Metadata = {
   title: "SLED One-Pager",
 };
 
 export default async function SledPage() {
-  // Use Clerk's auth() helper in this server component (guaranteed by middleware)
-  const { userId } = await auth();
+  await auth();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 border-b border-card-border pb-6">
-        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-teal-dark dark:text-teal">
-          SLED
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight text-navy sm:text-[1.75rem] dark:text-slate-50">
-          SLED One-Pager
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-          One-pager and key talking points for SLED opportunities.
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        eyebrow="SLED"
+        title="SLED One-Pager"
+        lead="One-pager and key talking points for SLED opportunities."
+      />
 
-      <div className="rounded-lg border border-card-border bg-card p-10 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-navy/5 dark:bg-teal/10">
-          <span className="text-xl">📄</span>
+      <div className="rounded-xl border border-card-border bg-card p-12 text-center">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-navy/5 dark:bg-teal/10">
+          <span className="text-2xl">📄</span>
         </div>
-        <h2 className="text-lg font-semibold text-navy dark:text-slate-100">
+        <h2 className="text-xl font-semibold text-navy dark:text-slate-100">
           SLED one-pager coming soon
         </h2>
-        <p className="mt-2 text-sm text-muted">
+        <p className="mt-3 text-base text-muted">
           The full SLED one-pager content and embedded viewer will be added here.
         </p>
-        <p className="mt-1 text-xs text-muted/70">
+        <p className="mt-2 text-sm text-muted/70">
           (Placeholder route — protected by Clerk authentication)
         </p>
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -1,26 +1,62 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ArrowRight, Package, Search } from "lucide-react";
 import {
   contentItems,
-  CONTENT_CATEGORIES,
-  CONTENT_TYPES,
+  getItemById,
+  getUsedCategories,
+  getUsedContentTypes,
   type ContentItem,
 } from "@/lib/content";
+import { products } from "@/lib/products";
+import { getDeckSlides } from "@/lib/decks/registry";
 import { ContentCard } from "@/components/content/content-card";
 import { ContentModal } from "@/components/content/content-modal";
+import { DeckModal } from "@/components/decks/DeckModal";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function ContentLibrary() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [search, setSearch] = useState("");
-  const [selectedType, setSelectedType] = useState<
-    ContentItem["type"] | "All"
-  >("All");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [deckItemId, setDeckItemId] = useState<string | null>(null);
+
+  const types = getUsedContentTypes();
+  const categories = getUsedCategories();
+
+  const typeParam = searchParams.get("type");
+  const categoryParam = searchParams.get("category");
+  const assetParam = searchParams.get("asset");
+
+  const selectedType: ContentItem["type"] | "All" = types.includes(
+    typeParam as ContentItem["type"]
+  )
+    ? (typeParam as ContentItem["type"])
+    : "All";
+
+  const selectedCategory = categories.includes(categoryParam ?? "")
+    ? (categoryParam as string)
+    : "All";
+
+  function updateParams(patch: Record<string, string | null>) {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(patch)) {
+      if (!value || value === "All") {
+        next.delete(key);
+      } else {
+        next.set(key, value);
+      }
+    }
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -42,12 +78,42 @@ export function ContentLibrary() {
     });
   }, [search, selectedType, selectedCategory]);
 
-  const selectedItem =
-    contentItems.find((item) => item.id === selectedItemId) ?? null;
+  const selectedItem = assetParam ? getItemById(assetParam) ?? null : null;
+  const deckItem = deckItemId ? getItemById(deckItemId) : null;
+  const deckSlides = deckItem ? getDeckSlides(deckItem) : undefined;
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-card-border bg-card p-5 shadow-sm">
+      <Link
+        href="/products"
+        className="flex flex-col gap-4 rounded-xl border border-card-border bg-card p-5 shadow-sm transition-colors hover:border-navy/25 hover:shadow-md dark:hover:border-teal/25 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+      >
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-navy/5 dark:bg-teal/10">
+            <Package className="h-5 w-5 text-navy dark:text-teal" />
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Product catalog
+            </p>
+            <p className="mt-0.5 font-bold text-navy dark:text-slate-100">
+              {products.length} SKUs with ePlus pricing
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              Hardware, analytics, and RealVue subscriptions live on the catalog
+              page — not mixed into this library.
+            </p>
+          </div>
+        </div>
+        <Button asChild variant="outline" size="sm" className="shrink-0">
+          <span>
+            Open catalog
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </Button>
+      </Link>
+
+      <div className="rounded-xl border border-card-border bg-card p-6 shadow-sm lg:p-7">
         <div className="space-y-4">
           <div className="relative max-w-xl">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -63,15 +129,15 @@ export function ContentLibrary() {
             <FilterRow label="Type">
               <FilterChip
                 active={selectedType === "All"}
-                onClick={() => setSelectedType("All")}
+                onClick={() => updateParams({ type: null })}
               >
                 All Types
               </FilterChip>
-              {CONTENT_TYPES.map((type) => (
+              {types.map((type) => (
                 <FilterChip
                   key={type}
                   active={selectedType === type}
-                  onClick={() => setSelectedType(type)}
+                  onClick={() => updateParams({ type })}
                 >
                   {type}
                 </FilterChip>
@@ -81,15 +147,15 @@ export function ContentLibrary() {
             <FilterRow label="Category">
               <FilterChip
                 active={selectedCategory === "All"}
-                onClick={() => setSelectedCategory("All")}
+                onClick={() => updateParams({ category: null })}
               >
                 All Categories
               </FilterChip>
-              {CONTENT_CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <FilterChip
                   key={category}
                   active={selectedCategory === category}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => updateParams({ category })}
                 >
                   {category}
                 </FilterChip>
@@ -112,8 +178,7 @@ export function ContentLibrary() {
             type="button"
             onClick={() => {
               setSearch("");
-              setSelectedType("All");
-              setSelectedCategory("All");
+              updateParams({ type: null, category: null });
             }}
             className="text-xs font-semibold uppercase tracking-wide text-navy hover:text-navy-light dark:text-teal dark:hover:text-teal-dark"
           >
@@ -123,18 +188,23 @@ export function ContentLibrary() {
       </div>
 
       {filteredItems.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredItems.map((item) => (
             <ContentCard
               key={item.id}
               item={item}
-              onViewDetails={() => setSelectedItemId(item.id)}
+              onViewDetails={() => updateParams({ asset: item.id })}
+              onReviewDeck={
+                getDeckSlides(item) ? () => setDeckItemId(item.id) : undefined
+              }
             />
           ))}
         </div>
       ) : (
         <div className="rounded-lg border border-dashed border-card-border bg-card px-6 py-14 text-center">
-          <p className="text-sm font-bold text-navy dark:text-slate-100">No assets found</p>
+          <p className="text-sm font-bold text-navy dark:text-slate-100">
+            No assets found
+          </p>
           <p className="mt-1 text-sm text-muted">
             Try adjusting your search or filters.
           </p>
@@ -145,9 +215,26 @@ export function ContentLibrary() {
         item={selectedItem}
         open={selectedItem !== null}
         onOpenChange={(open) => {
-          if (!open) setSelectedItemId(null);
+          if (!open) updateParams({ asset: null });
         }}
+        onReviewDeck={
+          selectedItem && getDeckSlides(selectedItem)
+            ? () => setDeckItemId(selectedItem.id)
+            : undefined
+        }
       />
+
+      {deckSlides ? (
+        <DeckModal
+          open={deckItemId !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeckItemId(null);
+          }}
+          slides={deckSlides}
+          deckTitle={deckItem?.title ?? "Deck"}
+          syncUrl
+        />
+      ) : null}
     </div>
   );
 }

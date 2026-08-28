@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Securing SLED &amp; Critical Infrastructure | ePlus Realwave + Everpure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --eplus-blue: #12498a;
+            --eplus-dark: #0f172a;
+            --accent-teal: #00d4a6;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .section-header {
+            font-size: 1.1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .onepager-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+        }
+
+        .accent-bar {
+            height: 3px;
+            background: linear-gradient(to right, #12498a, #00d4a6);
+        }
+
+        .feature-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                       box-shadow 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .stat-pill {
+            background: rgba(0, 212, 166, 0.1);
+            color: #00d4a6;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .print-optimized {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 
+                       0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        @media print {
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            
+            body {
+                background: white !important;
+                color: #0f172a !important;
+                font-size: 10.5pt;
+                line-height: 1.4;
+            }
+            
+            .no-print,
+            .print-hide {
+                display: none !important;
+            }
+            
+            .onepager-container {
+                max-width: 100% !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .hero-gradient {
+                background: #0f172a !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .feature-card {
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            
+            .accent-bar {
+                background: #12498a !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .stat-pill {
+                background: #e0f2fe !important;
+                color: #0369a1 !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .everpure-box {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            h1, h2, h3 {
+                color: #0f172a !important;
+            }
+            
+            .text-white {
+                color: #0f172a !important;
+            }
+            
+            .text-slate-300 {
+                color: #475569 !important;
+            }
+            
+            .bg-slate-900 {
+                background: #f8fafc !important;
+            }
+            
+            .border-white\/10 {
+                border-color: #e2e8f0 !important;
+            }
+        }
+        
+        .navy-text {
+            color: #0f172a;
+        }
+        
+        .section-divider {
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 py-8 px-4">
+    <!-- Header / Top Bar -->
+    <div class="max-w-[1100px] mx-auto mb-4 px-6">
+        <div class="flex items-center justify-between">
+            <!-- Left: Branding -->
+            <div class="flex items-center gap-x-3">
+                <div class="flex items-center gap-x-2">
+                    <div class="w-9 h-9 bg-[#12498a] rounded-xl flex items-center justify-center shadow-inner">
+                        <span class="text-white font-bold text-xl tracking-tighter">e+</span>
+                    </div>
+                    <div>
+                        <div class="font-display text-2xl font-semibold tracking-tighter text-slate-900">Realwave</div>
+                        <div class="text-[10px] text-slate-500 -mt-1">by ePlus</div>
+                    </div>
+                </div>
+                <div class="hidden sm:block text-xs px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-600 font-medium">
+                    Powered by <span class="font-semibold text-[#00d4a6]">Everpure</span>
+                </div>
+            </div>
+
+            <!-- Right: PDF Download Button -->
+            <button onclick="downloadAsPDF()" 
+                    class="no-print flex items-center gap-x-2 px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 hover:border-slate-400 transition-all rounded-2xl text-sm font-semibold text-slate-700 shadow-sm active:scale-[0.985]">
+                <i class="fa-solid fa-file-pdf text-[#12498a]"></i>
+                <span class="hidden sm:inline">Download PDF</span>
+                <span class="sm:hidden">PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="onepager-container bg-white shadow-2xl shadow-slate-300/60 rounded-3xl overflow-hidden print-optimized border border-slate-200">
+        
+        <!-- Hero Section -->
+        <div class="hero-gradient px-8 pt-9 pb-8 text-white relative">
+            <div class="max-w-3xl">
+                <div class="flex items-center gap-x-2 mb-3">
+                    <div class="stat-pill px-3 py-1 text-xs tracking-[0.5px]">SLED 2026 CAMPAIGN</div>
+                    <div class="text-xs text-white/50">•</div>
+                    <div class="text-xs text-white/60">June 2026</div>
+                </div>
+                
+                <h1 class="font-display text-4xl sm:text-5xl leading-[1.05] tracking-[-1.5px] font-semibold mb-4">
+                    Securing SLED &amp;<br>Critical Infrastructure
+                </h1>
+                
+                <p class="text-xl text-white/90 max-w-md">
+                    ePlus Realwave Intelligent Video Surveillance<br>
+                    <span class="font-medium">Powered by Everpure All-Flash Storage</span>
+                </p>
+            </div>
+            
+            <!-- Subtle accent -->
+            <div class="absolute bottom-0 right-0 w-1/3 h-px bg-gradient-to-l from-white/20 to-transparent"></div>
+        </div>
+
+        <!-- Intro -->
+        <div class="px-8 pt-7 pb-6 bg-white">
+            <p class="text-[15px] leading-relaxed text-slate-600 max-w-4xl">
+                SLED organizations are no longer just physical sites — they are complex digital-physical ecosystems. 
+                From port perimeters and law enforcement operations to airport terminals and university campuses, 
+                every camera feed is a strategic asset. <span class="font-semibold text-slate-800">ePlus Realwave</span>, 
+                powered by <span class="font-semibold text-[#00d4a6]">Everpure all-flash storage</span>, delivers a unified 
+                Intelligent Video Surveillance (IVS) platform that turns passive cameras into real-time intelligence engines — 
+                secure, ultra-fast, and always on.
+            </p>
+        </div>
+
+        <div class="accent-bar"></div>
+
+        <!-- Three Feature Sections -->
+        <div class="px-8 py-7 grid grid-cols-1 lg:grid-cols-3 gap-5 bg-slate-50">
+            
+            <!-- Card 1: Perimeter &amp; Public Safety -->
+            <div class="feature-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <div class="uppercase tracking-[1px] text-xs font-bold text-[#12498a]">PERIMETER &amp; PUBLIC SAFETY</div>
+                        <div class="font-semibold text-lg leading-tight mt-1 text-slate-900">Port of Long Beach<br>&amp; Orange County Sheriff</div>
+                    </div>
+                    <i class="fa-solid fa-shield-halved text-2xl text-[#12498a]/70 mt-1"></i>
+                </div>
+                
+                <div class="flex-1 text-sm text-slate-600 space-y-3">
+                    <p class="leading-snug">Leveraging Realwave’s proven AI analytics already trusted in these accounts.</p>
+                    
+                    <ul class="space-y-1.5 text-xs">
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>RealTrack AI + RealEdge 3D LiDAR</strong> — accurate perimeter intrusion, loitering &amp; unauthorized access detection with 98% false-alarm reduction.</span></li>
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>RealPlate global LPR/OCR</strong> — vehicle, container &amp; trailer ID verification at high speeds.</span></li>
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>RealInsights forensic search</strong> — sub-second metadata queries across video, access logs &amp; events.</span></li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-slate-100 text-[10px] text-emerald-600 font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Already active in target accounts</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Operational Resilience -->
+            <div class="feature-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <div class="uppercase tracking-[1px] text-xs font-bold text-[#12498a]">OPERATIONAL RESILIENCE</div>
+                        <div class="font-semibold text-lg leading-tight mt-1 text-slate-900">John Wayne Airport (SNA)</div>
+                    </div>
+                    <i class="fa-solid fa-plane text-2xl text-[#12498a]/70 mt-1"></i>
+                </div>
+                
+                <div class="flex-1 text-sm text-slate-600 space-y-3">
+                    <p class="leading-snug">Behind-the-scenes reliability and advanced infrastructure management for high-traffic critical facilities.</p>
+                    
+                    <ul class="space-y-1.5 text-xs">
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>RealVue VMS + RealTrack behavior analysis</strong> — real-time crowd flow, queue management &amp; emergency coordination.</span></li>
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>Remote monitoring with AI-verified alerts</strong> — 24/7 managed services via SMS/email/API from ePlus.</span></li>
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>Unified integrations</strong> — access control, gunshot detection &amp; EMNS for single-pane command.</span></li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-slate-100 text-[10px] text-emerald-600 font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Proven in complex airport environments</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Campus Safety -->
+            <div class="feature-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <div class="uppercase tracking-[1px] text-xs font-bold text-[#12498a]">CAMPUS SAFETY &amp; COMPLIANCE</div>
+                        <div class="font-semibold text-lg leading-tight mt-1 text-slate-900">UC Irvine</div>
+                    </div>
+                    <i class="fa-solid fa-graduation-cap text-2xl text-[#12498a]/70 mt-1"></i>
+                </div>
+                
+                <div class="flex-1 text-sm text-slate-600 space-y-3">
+                    <p class="leading-snug">Secure, privacy-first intelligence for students, staff, and facilities in higher education.</p>
+                    
+                    <ul class="space-y-1.5 text-xs">
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>RealFace + RealTrack</strong> — privacy-preserving access control, PPE compliance &amp; aggression/fall detection.</span></li>
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>Smart-space occupancy analytics</strong> — digital-twin mapping for efficient resource allocation &amp; emergency response.</span></li>
+                        <li class="flex gap-2"><span class="text-[#00d4a6] mt-px">•</span> <span><strong>Compliance-ready</strong> — HIPAA / Title IX / FOIA audit trails with automated redaction.</span></li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-slate-100 text-[10px] text-emerald-600 font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Built for regulated education environments</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Everpure Highlight Box -->
+        <div class="mx-8 my-6 rounded-2xl border border-slate-200 bg-slate-900 p-6 text-white everpure-box print:bg-slate-900">
+            <div class="flex flex-col md:flex-row md:items-center gap-5">
+                <div class="flex-1">
+                    <div class="flex items-center gap-x-2 mb-1">
+                        <i class="fa-solid fa-bolt-lightning text-[#00d4a6]"></i>
+                        <div class="uppercase text-xs tracking-[1.5px] font-bold text-[#00d4a6]">HIGH-SPEED DIGITAL VIDEO ENVIRONMENT</div>
+                    </div>
+                    <div class="font-semibold text-xl tracking-tight">Powered by Everpure All-Flash Storage</div>
+                    
+                    <div class="mt-3 text-sm text-white/80 max-w-prose">
+                        Traditional storage creates latency bottlenecks for AI analytics and forensic investigations. 
+                        <span class="font-medium text-white">Everpure all-flash, GB-connected storage</span> delivers instant video retrieval (GB/s throughput), 
+                        AI-ready performance, and nondisruptive scaling — already deployed in your accounts.
+                    </div>
+                </div>
+                
+                <div class="md:w-56 flex-shrink-0 bg-white/5 border border-white/10 rounded-xl p-4 text-xs">
+                    <div class="font-mono text-[10px] text-white/50 mb-1">KEY OUTCOMES</div>
+                    <div class="space-y-1 text-sm">
+                        <div class="flex justify-between"><span class="text-white/70">Video retrieval</span> <span class="font-semibold text-emerald-400">Instant</span></div>
+                        <div class="flex justify-between"><span class="text-white/70">AI inference latency</span> <span class="font-semibold text-emerald-400">Sub-10ms</span></div>
+                        <div class="flex justify-between"><span class="text-white/70">TCO impact</span> <span class="font-semibold text-emerald-400">-35% typical</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why We Win -->
+        <div class="px-8 pb-8">
+            <div class="text-xs uppercase tracking-widest font-bold text-slate-500 mb-3 px-1">WHY ePLUS REALWAVE + EVERPURE WINS FOR SLED</div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div class="flex gap-3 items-start">
+                    <i class="fa-solid fa-microchip text-[#12498a] mt-0.5"></i>
+                    <div>
+                        <div class="font-semibold text-sm">Lightweight Hybrid Stack</div>
+                        <div class="text-xs text-slate-500">Edge / serverless / cloud. 45,000+ device support. No rip-and-replace.</div>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <i class="fa-solid fa-brain text-[#12498a] mt-0.5"></i>
+                    <div>
+                        <div class="font-semibold text-sm">Proven AI Library</div>
+                        <div class="text-xs text-slate-500">Object tracking, facial/LPR, behavior analytics. 1.5M+ channels deployed.</div>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <i class="fa-solid fa-handshake text-[#12498a] mt-0.5"></i>
+                    <div>
+                        <div class="font-semibold text-sm">ePlus Managed Services</div>
+                        <div class="text-xs text-slate-500">24/7 monitoring, integration, optimization. Single-source accountability.</div>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <i class="fa-solid fa-chart-line text-[#12498a] mt-0.5"></i>
+                    <div>
+                        <div class="font-semibold text-sm">Everpure Performance</div>
+                        <div class="text-xs text-slate-500">All-flash speed for real-time AI + forensics. Already in your environment.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Footer -->
+        <div class="bg-slate-900 px-8 py-6 text-white flex flex-col sm:flex-row items-center justify-between gap-y-4">
+            <div>
+                <div class="font-semibold tracking-tight">Ready to turn your cameras into real-time intelligence?</div>
+                <div class="text-sm text-white/70">Joint ePlus + Everpure demo tailored to your SLED environment.</div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <a href="mailto:success@realwave.io?subject=SLED%20IVS%20Demo%20Request" 
+                   class="no-print inline-flex items-center justify-center gap-x-2 px-6 py-3 bg-white text-slate-900 hover:bg-slate-100 active:bg-white transition font-semibold rounded-2xl text-sm shadow-inner">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Request Demo</span>
+                </a>
+                
+                <a href="https://www.realwave.io" target="_blank"
+                   class="no-print inline-flex items-center justify-center gap-x-2 px-5 py-3 border border-white/30 hover:bg-white/10 transition font-medium rounded-2xl text-sm">
+                    <span>realwave.io</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tiny footer -->
+        <div class="px-8 py-3 bg-white border-t text-[10px] text-slate-400 flex items-center justify-between text-center sm:text-left">
+            <div>
+                ePlus Realwave • Where Technology Means More® • Confidential — For SLED Partners &amp; Prospects
+            </div>
+            <div class="hidden sm:block font-mono text-[9px] tracking-widest">v1.0 • JUN 2026</div>
+        </div>
+    </div>
+
+    <!-- Bottom note for user -->
+    <div class="max-w-[1100px] mx-auto mt-4 px-6 text-center">
+        <p class="text-xs text-slate-500">
+            <span class="font-medium">Pro tip:</span> Open this file in Chrome or Edge → Click “Download PDF” (or Cmd/Ctrl+P) → 
+            Enable “Background graphics” → Save as PDF. Perfect for email attachments and print.
+        </p>
+    </div>
+
+    <script>
+        // Tailwind script config (optional extensions)
+        function initializeTailwind() {
+            // Any runtime config if needed
+            console.log('%c[Realwave] One-pager template initialized', 'color:#64748b');
+        }
+        
+        function downloadAsPDF() {
+            const btns = document.querySelectorAll('.no-print');
+            btns.forEach(b => b.style.display = 'none');
+            
+            // Small delay so UI updates before print dialog
+            setTimeout(() => {
+                window.print();
+                
+                // Restore buttons after print dialog closes (best effort)
+                setTimeout(() => {
+                    btns.forEach(b => b.style.display = '');
+                }, 1500);
+            }, 80);
+        }
+        
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.metaKey && e.key === "p") {
+                // Allow native print, but also trigger our styled version
+                // Do nothing extra; user can use button for best results
+            }
+            if (e.key === "?" && document.activeElement.tagName === "BODY") {
+                e.preventDefault();
+                const btn = document.querySelector('button[onclick*="downloadAsPDF"]');
+                if (btn) btn.click();
+            }
+        });
+        
+        // Boot
+        window.onload = function() {
+            initializeTailwind();
+            
+            // Optional: Auto-hide dev note in production feel
+            // console.log('%c[GTM] This HTML one-pager is ready for hosting on IVSnews.com or realwave.io', 'color:#64748b');
+        }
+        
+        // Easter egg: Press "r" to highlight Realwave branding
+        document.addEventListener('keypress', function(e) {
+            if (e.key.toLowerCase() === 'r') {
+                const brand = document.querySelector('.font-display');
+                if (brand) {
+                    brand.style.transitionDuration = '80ms';
+                    brand.style.color = '#00d4a6';
+                    setTimeout(() => {
+                        brand.style.color = '';
+                    }, 1200);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

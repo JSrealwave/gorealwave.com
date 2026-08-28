@@ -12,6 +12,13 @@
   --navy-light: #1a5ba8;
   --teal: #00d4a6;
   --teal-dark: #00b892;
+  --header-height: 3.75rem;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-height: 6.75rem;
+  }
 }
 
 .dark {
@@ -33,14 +40,96 @@
   --color-teal: var(--teal);
   --color-teal-dark: var(--teal-dark);
   --font-sans: var(--font-lato);
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.625;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.45;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-lato), system-ui, -apple-system, sans-serif;
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* One-pager pages — always light, isolated from hub dark theme */
+html:has([data-one-pager="true"]),
+html:has([data-one-pager="true"]) body {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html:has([data-pdf-mode="true"]:not([data-pdf-clean="true"])),
+html:has([data-pdf-mode="true"]:not([data-pdf-clean="true"])) body {
+  background: #f1f5f9 !important;
+}
+
+html:has([data-pdf-clean="true"]),
+html:has([data-pdf-clean="true"]) body {
+  background: #ffffff !important;
+}
+
+/* PDF preview framing — browser only (?pdf=1, not clean export) */
+html:has([data-pdf-mode="true"]:not([data-pdf-clean="true"])) main {
+  min-height: 0;
+}
+
+[data-pdf-mode="true"]:not([data-pdf-clean="true"]) .pdf-shell {
+  width: 100%;
+  max-width: 68.75rem; /* 1100px — matches realwave-sled preview width */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Stronger framing — mirrors realwave-sled (rounded-3xl + shadow-2xl) */
+[data-pdf-mode="true"]:not([data-pdf-clean="true"]) .pdf-frame {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgb(226 232 240); /* slate-200 */
+  background-color: #fff;
+  box-shadow: 0 25px 50px -12px rgb(203 213 225 / 0.6); /* shadow-2xl / slate-300 */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* PDF capture mode (?pdf=1) — page-break and layout helpers */
+[data-pdf-mode="true"] .pdf-hero {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+[data-pdf-mode="true"] .pdf-section {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+[data-pdf-mode="true"] .pdf-card {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Keep benefits + footer together; allow benefits grid to flow across pages */
+[data-pdf-mode="true"] .pdf-tail-group {
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+[data-pdf-mode="true"] .pdf-footer {
+  break-before: avoid;
+  page-break-before: avoid;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 @keyframes fade-in {
