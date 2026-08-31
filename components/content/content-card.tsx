@@ -1,7 +1,8 @@
 import { ArrowRight, FileText, Play, Sparkles } from "lucide-react";
-import type { ContentItem } from "@/lib/content";
+import type { ContentItem, FilePreview } from "@/lib/content";
 import {
   getFileActionLabel,
+  getFilePreview,
   getItemFileUrl,
   getPublicPdfPreviewUrl,
   isDeckItem,
@@ -19,21 +20,28 @@ interface ContentCardProps {
   onViewDetails: () => void;
   /** Opens the interactive deck viewer (Deck items only). */
   onReviewDeck?: () => void;
+  /** Opens the in-page file preview modal (PDF, video, drawing). */
+  onPreviewFile?: (preview: FilePreview) => void;
 }
 
 export function ContentCard({
   item,
   onViewDetails,
   onReviewDeck,
+  onPreviewFile,
 }: ContentCardProps) {
   const isFullPage = isFullPageItem(item);
   const isDeck = isDeckItem(item);
   const pdfPreviewUrl = getPublicPdfPreviewUrl(item);
   const fileUrl = getItemFileUrl(item);
   const openUrl = fileUrl ?? pdfPreviewUrl;
+  const filePreview = getFilePreview(item);
   const fileLabel = getFileActionLabel(item);
   const isProduct = isProductThumbnailItem(item);
   const isVideo = item.type === "Video";
+  const openPreview = filePreview && onPreviewFile
+    ? () => onPreviewFile(filePreview)
+    : undefined;
 
   const body = (
     <>
@@ -61,20 +69,20 @@ export function ContentCard({
         <div className="flex items-center gap-2">
           {pdfPreviewUrl || fileUrl ? (
             <Button
-              asChild
               variant="outline"
               size="sm"
               className="shrink-0 px-3"
               title="Preview PDF"
+              aria-label="Preview PDF"
+              onClick={() =>
+                onPreviewFile?.({
+                  type: "pdf",
+                  src: fileUrl ?? pdfPreviewUrl ?? "",
+                  title: item.title,
+                })
+              }
             >
-              <a
-                href={fileUrl ?? pdfPreviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Preview PDF"
-              >
-                <FileText className="h-4 w-4" />
-              </a>
+              <FileText className="h-4 w-4" />
             </Button>
           ) : null}
           <Button
@@ -96,17 +104,20 @@ export function ContentCard({
             Details
           </Button>
         </div>
-      ) : openUrl && !isFullPage ? (
+      ) : openPreview ? (
         <div className="flex items-center gap-2">
-          <Button asChild variant="accent" size="sm" className="min-w-0 flex-1">
-            <a href={openUrl} target="_blank" rel="noopener noreferrer">
-              {isVideo ? (
-                <Play className="h-3.5 w-3.5 fill-current" />
-              ) : (
-                <FileText className="h-3.5 w-3.5" />
-              )}
-              {fileLabel}
-            </a>
+          <Button
+            variant="accent"
+            size="sm"
+            className="min-w-0 flex-1"
+            onClick={openPreview}
+          >
+            {isVideo ? (
+              <Play className="h-3.5 w-3.5 fill-current" />
+            ) : (
+              <FileText className="h-3.5 w-3.5" />
+            )}
+            {fileLabel}
           </Button>
           <Button
             variant="outline"
@@ -186,7 +197,14 @@ export function ContentCard({
               isDeck={isDeck}
               isVideo={isVideo}
               onReviewDeck={onReviewDeck}
-              pdfPreviewUrl={isDeck && onReviewDeck ? undefined : openUrl}
+              onPreview={openPreview}
+              pdfPreviewUrl={
+                isDeck && onReviewDeck
+                  ? undefined
+                  : openPreview
+                    ? undefined
+                    : openUrl
+              }
             />
           ) : null}
           {body}
@@ -203,6 +221,7 @@ function CardCover({
   isDeck,
   isVideo,
   onReviewDeck,
+  onPreview,
   pdfPreviewUrl,
 }: {
   src: string;
@@ -210,6 +229,7 @@ function CardCover({
   isDeck: boolean;
   isVideo?: boolean;
   onReviewDeck?: () => void;
+  onPreview?: () => void;
   pdfPreviewUrl?: string;
 }) {
   const image = (
@@ -243,6 +263,31 @@ function CardCover({
             Review Deck
           </span>
         </span>
+      </button>
+    );
+  }
+
+  if (onPreview) {
+    return (
+      <button
+        type="button"
+        onClick={onPreview}
+        className={cn(
+          frameClass,
+          "group/cover relative block w-full text-left transition hover:border-navy/30 dark:hover:border-teal/40"
+        )}
+        aria-label={isVideo ? `Watch video: ${title}` : `Open ${title}`}
+        title={isVideo ? "Watch video" : "Open"}
+      >
+        {image}
+        {isVideo ? (
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/15">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-slate-900 shadow">
+              <Play className="h-3 w-3 fill-current" />
+              Watch
+            </span>
+          </span>
+        ) : null}
       </button>
     );
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Package, Search } from "lucide-react";
@@ -10,6 +11,7 @@ import {
   getUsedCategories,
   getUsedContentTypes,
   type ContentItem,
+  type FilePreview,
 } from "@/lib/content";
 import { products } from "@/lib/products";
 import { getDeckSlides } from "@/lib/decks/registry";
@@ -21,12 +23,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const FilePreviewModal = dynamic(
+  () =>
+    import("@/components/content/file-preview-modal").then(
+      (mod) => mod.FilePreviewModal
+    ),
+  { ssr: false }
+);
+
 export function ContentLibrary() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [search, setSearch] = useState("");
   const [deckItemId, setDeckItemId] = useState<string | null>(null);
+  const [filePreview, setFilePreview] = useState<FilePreview | null>(null);
 
   const types = getUsedContentTypes();
   const categories = getUsedCategories();
@@ -193,9 +204,21 @@ export function ContentLibrary() {
             <ContentCard
               key={item.id}
               item={item}
-              onViewDetails={() => updateParams({ asset: item.id })}
+              onViewDetails={() => {
+                setFilePreview(null);
+                updateParams({ asset: item.id });
+              }}
+              onPreviewFile={(preview) => {
+                updateParams({ asset: null });
+                setFilePreview(preview);
+              }}
               onReviewDeck={
-                getDeckSlides(item) ? () => setDeckItemId(item.id) : undefined
+                getDeckSlides(item)
+                  ? () => {
+                      setFilePreview(null);
+                      setDeckItemId(item.id);
+                    }
+                  : undefined
               }
             />
           ))}
@@ -223,6 +246,16 @@ export function ContentLibrary() {
             : undefined
         }
       />
+
+      {filePreview ? (
+        <FilePreviewModal
+          preview={filePreview}
+          open
+          onOpenChange={(open) => {
+            if (!open) setFilePreview(null);
+          }}
+        />
+      ) : null}
 
       {deckSlides ? (
         <DeckModal

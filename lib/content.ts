@@ -257,7 +257,7 @@ export const contentItems: ContentItem[] = [
     slug: "realwave-sled",
     publicUrl: "/public/realwave-sled",
     pdfSlug: "realwave-sled",
-    thumbnailUrl: "/images/heroes/sled.webp",
+    thumbnailUrl: "/images/heroes/sled-securing.webp",
   },
   {
     id: "ivs-market-overview",
@@ -294,6 +294,7 @@ export const contentItems: ContentItem[] = [
       "Privacy-preserving sensor aggregation",
     ],
     slug: "spatial-intelligence",
+    thumbnailUrl: "/images/heroes/spatial-intelligence.webp",
   },
   {
     id: "deck-jh-8-3",
@@ -311,7 +312,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "eplus-realwave-jh",
     fileUrl: "/datasheets/eplus-realwave-jh.pdf",
-    thumbnailUrl: "/images/decks/eplus-realwave-jh/slide-00.webp",
+    thumbnailUrl: "/images/datasheets/eplus-realwave-jh.webp",
   },
   {
     id: "realwave-brochure-3p",
@@ -329,7 +330,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "realwave-brochure-3p",
     fileUrl: "/datasheets/realwave-brochure-3p.pdf",
-    thumbnailUrl: "/images/datasheets/realwave-brochure-3p.jpg",
+    thumbnailUrl: "/images/datasheets/realwave-brochure-3p.webp",
   },
   {
     id: "realwave-quick-intro-video",
@@ -347,7 +348,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "realwave-quick-intro",
     fileUrl: "/datasheets/realwave-quick-intro-720p.mp4",
-    thumbnailUrl: "/images/datasheets/realwave-quick-intro.jpg",
+    thumbnailUrl: "/images/datasheets/realwave-quick-intro.webp",
   },
   {
     id: "realwave-architecture",
@@ -383,7 +384,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "realintelligence-iq",
     fileUrl: "/datasheets/realintelligence-iq.pdf",
-    thumbnailUrl: "/images/datasheets/realintelligence-iq.jpg",
+    thumbnailUrl: "/images/datasheets/realintelligence-iq.webp",
   },
   {
     id: "datasheet-realvue",
@@ -401,7 +402,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "realvue-datasheet",
     fileUrl: "/datasheets/realvue.pdf",
-    thumbnailUrl: "/images/datasheets/realvue.jpg",
+    thumbnailUrl: "/images/datasheets/realvue.webp",
   },
   {
     id: "datasheet-rex-ai5-360",
@@ -419,7 +420,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "rex-ai5-360",
     fileUrl: "/datasheets/rex-ai5-360.pdf",
-    thumbnailUrl: "/images/datasheets/rex-ai5-360.jpg",
+    thumbnailUrl: "/images/datasheets/rex-ai5-360.webp",
   },
   {
     id: "datasheet-rex-ai5-fd",
@@ -437,7 +438,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "rex-ai5-fd",
     fileUrl: "/datasheets/rex-ai5-fd.pdf",
-    thumbnailUrl: "/images/datasheets/rex-ai5-fd.jpg",
+    thumbnailUrl: "/images/datasheets/rex-ai5-fd.webp",
   },
   {
     id: "datasheet-rex-ai5-mb",
@@ -455,7 +456,7 @@ export const contentItems: ContentItem[] = [
     ],
     slug: "rex-ai5-mb",
     fileUrl: "/datasheets/rex-ai5-mb.pdf",
-    thumbnailUrl: "/images/datasheets/rex-ai5-mb.jpg",
+    thumbnailUrl: "/images/datasheets/rex-ai5-mb.webp",
   },
 ];
 
@@ -557,6 +558,41 @@ export function getFileActionLabel(item: ContentItem): string {
     default:
       return "Open file";
   }
+}
+
+export type FilePreviewKind = "pdf" | "video" | "drawing";
+
+export type FilePreview = {
+  type: FilePreviewKind;
+  src: string;
+  title: string;
+};
+
+export function getFilePreviewKind(
+  item: ContentItem
+): FilePreviewKind | undefined {
+  switch (item.type) {
+    case "Video":
+      return "video";
+    case "Drawing":
+      return "drawing";
+    case "Datasheet":
+    case "Brochure":
+      return "pdf";
+    default:
+      return undefined;
+  }
+}
+
+export function getFilePreview(item: ContentItem): FilePreview | undefined {
+  const type = getFilePreviewKind(item);
+  if (!type) return undefined;
+
+  return {
+    type,
+    src: item.fileUrl ?? "",
+    title: item.title,
+  };
 }
 
 export function getItemPdfSlug(item: ContentItem): string | undefined {
