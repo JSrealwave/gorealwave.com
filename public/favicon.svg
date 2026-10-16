@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Three overlapping parallelograms: navy (front-left), sky, teal (back-right). -->
+  <g transform="translate(16 17) skewX(-20) translate(-16 -17)">
+    <rect x="13.4" y="3.6" width="13.4" height="23.2" rx="2.4" fill="#00D4A6"/>
+    <rect x="7.6" y="8" width="10.4" height="18.8" rx="2.2" fill="#368CF1"/>
+    <rect x="2.6" y="13" width="9.2" height="13.8" rx="2.1" fill="#12498A"/>
+  </g>
+</svg>

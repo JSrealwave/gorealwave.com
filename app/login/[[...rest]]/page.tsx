@@ -10,12 +10,17 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-navy shadow-sm ring-1 ring-navy/20 dark:bg-navy-light dark:ring-white/10">
-            <span className="text-sm font-bold tracking-tight text-white">RW</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-slate-50">
-            Realwave
-          </h1>
+          <a
+            href="https://gorealwave.com"
+            className="mx-auto mb-5 inline-flex"
+            aria-label="Realwave home"
+          >
+            <img
+              src="/assets/logo-wordmark.png"
+              alt="Realwave"
+              className="h-9 w-auto dark:invert"
+            />
+          </a>
           <p className="mt-1 text-sm text-muted">Enablement Hub</p>
           <p className="mt-4 text-sm text-muted">
             Sign in to access internal seller tools and assets.
