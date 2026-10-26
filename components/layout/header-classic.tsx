@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SignOutButton } from "@/components/layout/sign-out-button";
 import { BrandMark } from "@/components/layout/brand-mark";
 import { isNavLinkActive, navLinks } from "@/components/layout/nav-config";
 import { cn } from "@/lib/utils";
@@ -47,14 +47,7 @@ export function HeaderClassic() {
 
         <div className="flex shrink-0 items-center gap-2.5">
           <ThemeToggle />
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox:
-                  "h-8 w-8 rounded-full ring-1 ring-card-border hover:ring-navy/30 dark:hover:ring-teal/40 transition",
-              },
-            }}
-          />
+          <SignOutButton />
         </div>
       </div>
 

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteChrome } from "@/components/layout/site-chrome";
 import "./globals.css";
@@ -42,21 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ClerkProvider
-            signInUrl="/login"
-            signUpUrl="/login"
-            afterSignOutUrl="/login"
-            signInFallbackRedirectUrl="/"
-            signUpFallbackRedirectUrl="/"
-            signInForceRedirectUrl="/"
-            appearance={{
-              layout: {
-                unsafe_disableDevelopmentModeWarnings: true,
-              },
-            }}
-          >
-            <SiteChrome>{children}</SiteChrome>
-          </ClerkProvider>
+          <SiteChrome>{children}</SiteChrome>
         </ThemeProvider>
       </body>
     </html>

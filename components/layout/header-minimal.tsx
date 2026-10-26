@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+import { SignOutButton } from "@/components/layout/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BrandMark } from "@/components/layout/brand-mark";
 import { isNavLinkActive, navLinks } from "@/components/layout/nav-config";
@@ -57,14 +57,7 @@ export function HeaderMinimal() {
 
         <div className="flex shrink-0 items-center gap-2.5">
           <ThemeToggle />
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox:
-                  "h-8 w-8 rounded-full ring-1 ring-card-border transition hover:ring-teal/30",
-              },
-            }}
-          />
+          <SignOutButton />
         </div>
       </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Show } from "@clerk/nextjs";
 import { Header } from "@/components/layout/header";
 
 function shouldHideHubChrome(pathname: string): boolean {
@@ -17,9 +16,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!hideChrome && (
-        <Show when="signed-in">
-          <Header />
-        </Show>
+        <Header />
       )}
       <main
         className={

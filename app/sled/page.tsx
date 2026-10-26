@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
+import { requireHubUser } from "@/lib/hub-session";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/layout/page-header";
 
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SledPage() {
-  await auth();
+  await requireHubUser();
 
   return (
     <PageContainer>

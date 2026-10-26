@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { getHubUser } from "@/lib/hub-session";
 import {
   getOnePagerPdfSource,
   ONE_PAGER_PDF_SLUGS,
@@ -27,7 +27,7 @@ export async function GET(_request: Request, context: RouteContext) {
     );
   }
 
-  const { userId } = await auth();
+  const userId = await getHubUser();
 
   if (!source.allowPublicApi && !userId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

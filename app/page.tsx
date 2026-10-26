@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Mail, Package, Sparkles } from "lucide-react";
-import { auth } from "@clerk/nextjs/server";
+import { requireHubUser } from "@/lib/hub-session";
 import { contentItems, getHighlightItem } from "@/lib/content";
 import { products } from "@/lib/products";
 import {
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default async function DashboardPage() {
-  await auth();
+  await requireHubUser();
 
   const highlight = getHighlightItem();
   const otherItems = contentItems.filter((item) => item.id !== highlight.id);
