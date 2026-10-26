@@ -8,7 +8,11 @@ export const HUB_SESSION_SECONDS = 60 * 60 * 24 * 14;
 
 export const HUB_PASSWORD = "!Realwave2026";
 
-export const HUB_EMAILS: readonly string[] = [];
+export const HUB_EMAILS: readonly string[] = [
+  "jhinshaw@bailiwick.com",
+  "msmith@bailiwick.com",
+  "jsullivan@bailiwick.com",
+];
 
 const SIGNING_KEY = "rw-hub-session-v1";
 
