@@ -87,6 +87,24 @@ export const contentItems: ContentItem[] = [
     thumbnailUrl: "/images/heroes/healthcare.webp",
   },
   {
+    id: "healthcare-one-pager-pdf",
+    title: "ePlus Realwave Healthcare One-Pager",
+    category: ["Healthcare", "IVS"],
+    type: "One-Pager",
+    description:
+      "Customer one-pager for hospitals and health systems: video, access, and alarms on one glass, with healthcare use cases.",
+    keyMessage:
+      "Open video intelligence, operated 24/7. Unified physical security for hospitals and health systems. Keep the cameras you have.",
+    highlights: [
+      "Vue, Intelligence, and Operate on one timeline",
+      "Elopement, infant security, workplace violence, ED flow, and med-cabinet access",
+      "Privacy-first depth sensors where a camera is the wrong sensor",
+    ],
+    slug: "eplus-realwave-healthcare-one-pager",
+    fileUrl: "/datasheets/eplus-realwave-healthcare-one-pager.pdf",
+    thumbnailUrl: "/images/heroes/healthcare.webp",
+  },
+  {
     id: "manufacturing-1",
     title: "Manufacturing: Safer, Smarter Factories",
     category: ["Manufacturing"],
@@ -553,6 +571,8 @@ export function getFileActionLabel(item: ContentItem): string {
       return "Open brochure";
     case "Datasheet":
       return "Open datasheet";
+    case "One-Pager":
+      return "Open one-pager";
     case "Decks":
       return "Open PDF";
     default:
@@ -579,6 +599,8 @@ export function getFilePreviewKind(
     case "Datasheet":
     case "Brochure":
       return "pdf";
+    case "One-Pager":
+      return item.fileUrl?.toLowerCase().endsWith(".pdf") ? "pdf" : undefined;
     default:
       return undefined;
   }
