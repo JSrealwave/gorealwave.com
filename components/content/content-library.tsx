@@ -6,10 +6,11 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Package, Search } from "lucide-react";
 import {
-  contentItems,
   getItemById,
+  getLibraryItems,
   getUsedCategories,
   getUsedContentTypes,
+  isLibraryItem,
   type ContentItem,
   type FilePreview,
 } from "@/lib/content";
@@ -72,7 +73,7 @@ export function ContentLibrary() {
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return contentItems.filter((item) => {
+    return getLibraryItems().filter((item) => {
       const matchesSearch =
         !query ||
         item.title.toLowerCase().includes(query) ||
@@ -89,7 +90,9 @@ export function ContentLibrary() {
     });
   }, [search, selectedType, selectedCategory]);
 
-  const selectedItem = assetParam ? getItemById(assetParam) ?? null : null;
+  const requestedItem = assetParam ? getItemById(assetParam) ?? null : null;
+  const selectedItem =
+    requestedItem && isLibraryItem(requestedItem) ? requestedItem : null;
   const deckItem = deckItemId ? getItemById(deckItemId) : null;
   const deckSlides = deckItem ? getDeckSlides(deckItem) : undefined;
 

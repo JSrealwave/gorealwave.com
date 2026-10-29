@@ -16,10 +16,11 @@ export function getWeekOfLabel(date = new Date()): string {
   });
 }
 
+/** Library assets a weekly touchpoint can feature, including Market Briefs. */
 export function getFeaturedBriefAssets(limit = 6): ContentItem[] {
   const highlight = getHighlightItem();
   return contentItems
-    .filter((item) => item.id !== highlight.id)
+    .filter((item) => item.id !== highlight.id && item.type !== "Weekly Brief")
     .filter((item) => item.publicUrl || item.type === "Market Brief")
     .slice(0, limit);
 }

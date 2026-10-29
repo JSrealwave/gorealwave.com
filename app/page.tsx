@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Mail, Package, Sparkles } from "lucide-react";
 import { requireHubUser } from "@/lib/hub-session";
-import { contentItems, getHighlightItem } from "@/lib/content";
+import {
+  getHighlightItem,
+  getLibraryItems,
+  getRecentLibraryItems,
+} from "@/lib/content";
 import { products } from "@/lib/products";
 import {
   isProductThumbnailItem,
@@ -17,13 +21,8 @@ export default async function DashboardPage() {
   await requireHubUser();
 
   const highlight = getHighlightItem();
-  const otherItems = contentItems.filter((item) => item.id !== highlight.id);
-  // Prefer shareable one-pagers, then items with thumbnails, then the rest.
-  const libraryPreview = [
-    ...otherItems.filter((item) => Boolean(item.publicUrl)),
-    ...otherItems.filter((item) => !item.publicUrl && item.thumbnailUrl),
-    ...otherItems.filter((item) => !item.publicUrl && !item.thumbnailUrl),
-  ].slice(0, 4);
+  const libraryItems = getLibraryItems();
+  const libraryPreview = getRecentLibraryItems(4);
 
   return (
     <PageContainer>
@@ -64,7 +63,10 @@ export default async function DashboardPage() {
             <Button asChild variant="accent" size="lg">
               <Link
                 href={
-                  highlight.publicUrl ?? `/library?asset=${highlight.id}`
+                  highlight.publicUrl ??
+                  (highlight.type === "Weekly Brief"
+                    ? "/weekly-brief"
+                    : `/library?asset=${highlight.id}`)
                 }
               >
                 View Highlight
@@ -80,7 +82,7 @@ export default async function DashboardPage() {
           href="/library"
           icon={BookOpen}
           label="Content Library"
-          value={`${contentItems.length} assets`}
+          value={`${libraryItems.length} assets`}
           detail="One-pagers, decks, and market briefs"
         />
         <HubLink
@@ -109,7 +111,7 @@ export default async function DashboardPage() {
             View all →
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {libraryPreview.map((item) => {
             const isProduct = isProductThumbnailItem(item);
 

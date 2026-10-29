@@ -120,16 +120,14 @@ export function WeeklyBriefSection() {
                   </li>
                 ))}
               </ul>
-              <Button asChild variant="outline" size="sm" className="mt-5">
-                <Link
-                  href={
-                    highlight.publicUrl ?? `/library?asset=${highlight.id}`
-                  }
-                >
-                  Open highlight
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </Button>
+              {highlight.publicUrl ? (
+                <Button asChild variant="outline" size="sm" className="mt-5">
+                  <Link href={highlight.publicUrl}>
+                    Open highlight
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              ) : null}
             </div>
           </div>
 

@@ -6,6 +6,7 @@ export type ContentItem = {
     | "One-Pager"
     | "Decks"
     | "Market Brief"
+    | "Weekly Brief"
     | "Brochure"
     | "Video"
     | "Drawing"
@@ -26,7 +27,23 @@ export type ContentItem = {
   partNumber?: string;
 };
 
-export const HIGHLIGHT_ID = "ivs-market-overview";
+/**
+ * Newest library additions, left to right on the home preview.
+ * Prepend the next file's id here.
+ */
+const LIBRARY_RECENT_IDS = [
+  "healthcare-one-pager-pdf",
+  "realwave-quick-intro-video",
+  "datasheet-rex-ai5-mb",
+  "datasheet-rex-ai5-fd",
+] as const;
+
+/**
+ * Shown in "This Week's Highlight" only when no Weekly Brief exists yet.
+ * Weekly Briefs are the seller touchpoint (email, MMS, Webex).
+ * Market Briefs are topic overviews and stay in the library.
+ */
+export const HIGHLIGHT_FALLBACK_ID = "ivs-market-overview";
 
 export const contentItems: ContentItem[] = [
   {
@@ -486,6 +503,7 @@ export const CONTENT_TYPES = [
   "Drawing",
   "Datasheet",
   "Market Brief",
+  "Weekly Brief",
 ] as const satisfies readonly ContentItem["type"][];
 
 const CATEGORY_ORDER = [
@@ -498,6 +516,7 @@ const CATEGORY_ORDER = [
   "Architecture",
   "Datasheet",
   "Market Brief",
+  "Weekly Brief",
   "Camera",
   "VMS",
   "RealEdge",
@@ -517,13 +536,41 @@ const CATEGORY_ORDER = [
 
 export const CONTENT_CATEGORIES = CATEGORY_ORDER;
 
+/** Weekly Briefs are touchpoints, not stored library assets. Market Briefs stay in the library. */
+export function isLibraryItem(item: ContentItem): boolean {
+  return item.type !== "Weekly Brief";
+}
+
+export function getLibraryItems(): ContentItem[] {
+  return contentItems.filter(isLibraryItem);
+}
+
+export function getWeeklyBriefTouchpoints(): ContentItem[] {
+  return contentItems.filter((item) => item.type === "Weekly Brief");
+}
+
+/** Newest library additions first, including Market Briefs when they are the newest. */
+export function getRecentLibraryItems(limit = 4): ContentItem[] {
+  const library = getLibraryItems();
+  const byId = new Map(library.map((item) => [item.id, item]));
+  const pinned = LIBRARY_RECENT_IDS.flatMap((id) => {
+    const item = byId.get(id);
+    return item ? [item] : [];
+  });
+  if (pinned.length >= limit) return pinned.slice(0, limit);
+
+  const seen = new Set(pinned.map((item) => item.id));
+  const rest = [...library].reverse().filter((item) => !seen.has(item.id));
+  return [...pinned, ...rest].slice(0, limit);
+}
+
 export function getUsedContentTypes(): ContentItem["type"][] {
-  const used = new Set(contentItems.map((item) => item.type));
+  const used = new Set(getLibraryItems().map((item) => item.type));
   return CONTENT_TYPES.filter((type) => used.has(type));
 }
 
 export function getUsedCategories(): string[] {
-  const used = new Set(contentItems.flatMap((item) => item.category));
+  const used = new Set(getLibraryItems().flatMap((item) => item.category));
   const ordered = CATEGORY_ORDER.filter((category) => used.has(category));
   const rest = [...used]
     .filter((category) => !CATEGORY_ORDER.includes(category as (typeof CATEGORY_ORDER)[number]))
@@ -532,8 +579,12 @@ export function getUsedCategories(): string[] {
 }
 
 export function getHighlightItem(): ContentItem {
+  const weekly = getWeeklyBriefTouchpoints();
+  if (weekly.length > 0) return weekly[weekly.length - 1];
+
   return (
-    contentItems.find((item) => item.id === HIGHLIGHT_ID) ?? contentItems[0]
+    contentItems.find((item) => item.id === HIGHLIGHT_FALLBACK_ID) ??
+    contentItems[0]
   );
 }
 
@@ -542,7 +593,7 @@ export function getItemById(id: string): ContentItem | undefined {
 }
 
 export function isHighlight(item: ContentItem): boolean {
-  return item.id === HIGHLIGHT_ID;
+  return item.id === getHighlightItem().id;
 }
 
 export function isFullPageItem(item: ContentItem): boolean {

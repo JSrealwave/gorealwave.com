@@ -61,7 +61,7 @@ Edit `lib/content.ts` to add or update enablement assets. Each `ContentItem` sup
 - `keyMessage` + `highlights[]` for the detail modal
 - `slug` for future detail pages / HTML one-pager links
 
-The dashboard highlight is controlled by `HIGHLIGHT_ID` (currently `spatial-1`).
+The home highlight uses the latest Weekly Brief. Until one exists, it falls back to `HIGHLIGHT_FALLBACK_ID` (currently `ivs-market-overview`). The four newest library cards are `LIBRARY_RECENT_IDS`. Market Briefs stay in the library.
 
 Future: drop HTML one-pagers into `content/` and reference via `slug`.
 
